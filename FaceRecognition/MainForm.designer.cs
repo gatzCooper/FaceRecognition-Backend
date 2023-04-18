@@ -72,6 +72,7 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.imageBox1 = new Emgu.CV.UI.ImageBox();
             this.pic2 = new System.Windows.Forms.PictureBox();
+            this.TimerPrompt = new System.Windows.Forms.Timer(this.components);
             this.Panel3.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -412,7 +413,7 @@
             // 
             this.lblTime.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblTime.Font = new System.Drawing.Font("Courier New", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTime.Location = new System.Drawing.Point(100, 719);
+            this.lblTime.Location = new System.Drawing.Point(110, 717);
             this.lblTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(525, 62);
@@ -651,6 +652,7 @@
         private System.Windows.Forms.Label labelDate;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Timer TimerPrompt;
     }
 }
 

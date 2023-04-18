@@ -32,18 +32,18 @@
                             <tr align="center">
                                 <td>#</td>
                                 <th> </th>
-                                <th colspan="2"> LOGIN </th>
-                                <th colspan="2">  LOGOUT </th>
+                                <th colspan="2"> AM </th>
+                                <th colspan="2">  PM </th>
                                 <th  >   </th>
                                 <th  colspan="2">Daily</th>
                             </tr>
                             <tr>
                                 <td>#</td>
                                 <th colspan="1">Date</th>
-                                <th>AM</th>
-                                <th>PM</th>
-                                <th>AM</th>
-                                <th>PM</th>
+                                <th>Arrival</th>
+                                <th>Departure</th>
+                                <th>Arrival</th>
+                                <th>Departure</th>
                                 <th> UNDERTIME </th>
                                 <th>TOTAL</th>
                             </tr>

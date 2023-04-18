@@ -14,6 +14,8 @@ using System.IO.Ports;
 
 
 using FaceRecognition.DataLayer;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace FaceRecognition
 {
@@ -271,6 +273,7 @@ namespace FaceRecognition
                 var currenttime = DateTime.Now.TimeOfDay;
                 var attendanceId = Properties.Settings.Default.attendanceId;
 
+
                 if (action == "CLOCK IN")
                 {
                     var isRecorded = data.ClockIn(currenttime);
@@ -305,7 +308,27 @@ namespace FaceRecognition
                         AutoClosingMessageBox.Show("Invalid CLOCK IN Action", "Error", 2000);
                 }
                 else if (action == "CLOCK OUT")
+
                 {
+                    if (data.IsTotalHoursLessThanOneHour(attendanceId))
+                    {
+            
+                        DialogResult prompt = MessageBox.Show("You have consumed less than an hour from your login time. " +
+                               "Are you sure you want to logout?", "Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+                   
+                        switch (prompt)
+                        {
+                            case DialogResult.OK:
+                                {
+                                    break;
+                                }
+                            case DialogResult.Cancel:
+                                {
+                                    return;
+                                }
+                        }
+                    }
+
                     var isRecorded = data.ClockOut(attendanceId, currenttime);
 
                     if (isRecorded)
@@ -331,9 +354,12 @@ namespace FaceRecognition
             }
         }
 
+
         public void SetActiveClockButton()
         {
             var result = data.GetAttendanceById(Properties.Settings.Default.attendanceId);
+            
+
 
             if (result != null && result.Rows.Count > 0)
             {
@@ -364,6 +390,7 @@ namespace FaceRecognition
             }
         }
 
+
         private void DisplayTimeSheet()
         {
             dataGridView1.DataSource = data.GetTimeSheet();
@@ -393,8 +420,6 @@ namespace FaceRecognition
                 AutoClosingMessageBox.Show("Mas maaga ka sa iyong oras", "Invalid Time", 3000);
             }
         }
-
-
 
         public class AutoClosingMessageBox
         {

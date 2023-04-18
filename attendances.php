@@ -117,13 +117,13 @@
                                     }else{
                                         $ot= 0;
                                         $min=0;
-                                        $tt= $row['total_hours'];
+                                        $tt= ltrim(date('H', strtotime($row['total_hours'])), '0');
                                     }
                                     ?>
 
                                     <td> <?= $ot; ?></td>
                                     <td> <?= $min; ?></td>
-                                    <td> <?= $tt; ?></td>
+                                    <td><?= $tt; ?></td>
 
                                 </tr>
 

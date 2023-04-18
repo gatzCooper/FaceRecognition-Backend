@@ -109,6 +109,15 @@ namespace FaceRecognition.DataLayer
             return ExecuteDataTable(sql);
         }
 
+        public bool IsTotalHoursLessThanOneHour(int id)
+        {
+            var sql = $"select HOUR(TIMEDIFF(NOW(), MAX(CAST(clock_in as DATETIME)))) AS total_hours " +
+                $"from tbl_attendances where id = {id}";
+
+            var result = ExecuteDataTable(sql);
+            return (int)result.Rows[0]["total_hours"] < 1;
+        }
+
         public DataTable GetTimeSheetByUserId()
         {
             var sql = "SELECT " +
