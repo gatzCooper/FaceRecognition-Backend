@@ -104,26 +104,10 @@
                                     <td><?= (date('a', strtotime($row['clock_out'])) === 'pm') ? '' : format_time($row['clock_out']) ?></td>
                                     <td><?= (date('a', strtotime($row['clock_in'])) === 'am') ? '' : format_time($row['clock_in']) ?></td>
                                     <td><?= (date('a', strtotime($row['clock_out'])) === 'am') ? '' : format_time($row['clock_out']) ?></td>
-                                    <td><?= ltrim(date('H', strtotime($row['undertime'])), '0'); ?></td>
-                                    
-                                    <?php
-                                    if(strtotime($row['total_hours']) > strtotime('8:00') ) {
-                                        $tt="08:00:00";
-                                        $ot=  (strtotime($row['total_hours']) - strtotime('8:00')) /60 ;
-
-                                        $xsplit = explode(".", $ot);
-                                        $ot=$xsplit[0];
-                                        $min=  substr($xsplit[1], 0, 2);;
-                                    }else{
-                                        $ot= 0;
-                                        $min=0;
-                                        $tt= ltrim(date('H', strtotime($row['total_hours'])), '0');
-                                    }
-                                    ?>
-
-                                    <td> <?= $ot; ?></td>
-                                    <td> <?= $min; ?></td>
-                                    <td><?= $tt; ?></td>
+                                    <td><?= strtotime($row['undertime']) > 0 ? ltrim(date('H', strtotime($row['undertime'])), '0')  : '0'  ?></td>
+                                    <td><?= strtotime($row['undertime']) > 0 ? ltrim(date('mm', strtotime($row['undertime'])), '0')  : '0'  ?></td>
+                                    <td><?= strtotime($row['total_hours']) > 0 ? ltrim(date('H', strtotime($row['total_hours'])), '0')  : '0'  ?></td>
+                                   
 
                                 </tr>
 

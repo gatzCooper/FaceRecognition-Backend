@@ -74,7 +74,9 @@ namespace FaceRecognition.DataLayer
         public bool ComputeTotalHours(int id)
         {
            
-            var sql = $"UPDATE tbl_attendances SET total_hours = TIMEDIFF(clock_out, clock_in)" +
+            var sql = $"UPDATE tbl_attendances SET total_hours = " +
+                $"(SELECT TIME_FORMAT(TIMEDIFF(clock_out, MAX(clock_in)), '%H:%i:%s') " +
+                $"FROM tbl_attendances where id ={id})" +
                 $"where id ={id}";
 
             return ExecuteNonQuery(sql);

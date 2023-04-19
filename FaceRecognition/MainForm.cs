@@ -339,7 +339,7 @@ namespace FaceRecognition
                         Properties.Settings.Default.attendanceId = 0;
                         Properties.Settings.Default.Save();
                         Properties.Settings.Default.Reload();
-
+                        button1.Enabled = false;
                         button1.Text = "CLOCK IN";
                     }
                     else
