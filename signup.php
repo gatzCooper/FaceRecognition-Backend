@@ -30,7 +30,7 @@ include('layout/headF.php');
                     <div class="dragArea row">
                         <p><strong> ID</strong></p>
                         <div class="col-lg-12 col-md-12 col-sm-12 form-group" data-for="name">
-                            <input type="text" name="userNo" data-form-field="name" class="form-control"    required>
+                            <input type="text" id="userNo" name="userNo" data-form-field="name" class="form-control"    required>
                         </div>
 
 

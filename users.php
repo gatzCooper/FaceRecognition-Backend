@@ -310,5 +310,45 @@
         document.getElementById("password").value = "NC2023" + x;
          
     }
+
+    $(function(){
+        var validation_el = $('<div>')
+            validation_el.addClass('validation-err alert alert-danger my-2')
+            validation_el.hide()
+        $('input[name="userNo"]').on('input',function(){
+            var userNo = $(this).val()
+                $(this).removeClass("border-danger border-success")
+                $(this).siblings(".validation-err").remove();
+            var err_el = validation_el.clone()
+
+                if(userNo == '')
+                return false;
+
+                $.ajax({
+                    url:"validate.php",
+                    method:'POST',
+                    data:{userNo:userNo},
+                    dataType:'json',
+                    error:err=>{
+                        console.error(err)
+                        alert("An error occured while validating the data")
+                    },
+                    success:function(resp){
+                        if(Object.keys(resp).length > 0 && resp.field_name == 'userNo'){
+                            err_el.text(resp.msg)
+                            $('input[name="userNo"]').addClass('border-danger')
+                            $('input[name="userNo"]').after(err_el)
+                            err_el.show('slideDown')
+                            $('#submit').attr('disabled',true)
+                        }else{
+                            $('input[name="userNo"]').addClass('border-success')
+                            $('#submit').attr('disabled',false)
+                            
+                        }
+                    }
+                })
+        })
+
+    })
 </script>
 <?php include_once('layout/footer.php'); ?>
