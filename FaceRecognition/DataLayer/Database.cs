@@ -11,9 +11,9 @@ namespace FaceRecognition.DataLayer
         private MySqlCommand command;
         private MySqlDataAdapter adapter;
 
-        private string server = "localhost";
-        private string username = "root";
-        private string password = "";
+        private string server = "nc-webapp-db.mysql.database.azure.com";
+        private string username = "nc_admin";
+        private string password = "P@ssword01";
         private string database = "faceattendancedb";
 
         private string connectionString;
@@ -24,10 +24,7 @@ namespace FaceRecognition.DataLayer
             command = new MySqlCommand();
             adapter = new MySqlDataAdapter();
 
-            connectionString = String.Format(
-                "server={0}; username={1}; password={2}; database={3}",
-                server, username, password, database
-                );
+            connectionString = $"Server={server};Port=3306;UserID={username};Password={password};Database={database};SslMode=None;";
 
             connection.ConnectionString = connectionString;
         }

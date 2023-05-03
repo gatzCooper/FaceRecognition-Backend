@@ -1,7 +1,7 @@
 <?php include_once('layout/head.php'); ?>
 <?php $title = 'User'; ?>
 <?php if (isset($_GET['t'])) {
-    $role = $_GET['t'];
+    $role   = $_GET['t'];
     $sqlWhere = " AND role='$role'";
 } else {
     $sqlWhere = '';
@@ -183,21 +183,62 @@
 
                                     <div class="col-md-6">
                                         <div class="md-form">
-                                            <label for="" class="">  Schedule</label>
-
-                                            <select name="schedule" class="form-control" required>
-                                                <option></option>
-                                                <?php $result = my_query("SELECT * FROM tbl_constants WHERE category='Schedule'");
-                                                for ($i = 1; $row = $result->fetch(); $i++) { ?>
-                                                    <option <?= (isset($schedule) ? (($schedule == $row['value']) ? 'selected' : '') : ''); ?> ><?= $row['value']; ?></option>
-                                                <?php } ?>
-                                            </select>
-
-
+                                        <p></p>
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#viewsched">
+                                            View Schedules
+                                        </button>
+                                        
+                                        <div class="modal fade" id="viewsched" tabindex="-1" role="dialog" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="scheduleModalLabel">Schedules</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                            <?php  $userid = isset($_GET['id']) ?>
+                                                <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                    <th>Subject Code</th>
+                                                    <th>Day</th>
+                                                    <th>Start Time</th>
+                                                    <th>End Time</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                
+                                                    <?php
+                                                    // Fetch schedules from database and loop through them
+                                                   
+                                                     echo ">>>>>>>>>$userid";
+                                                    $schedules = my_query("SELECT * FROM tbl_schedule WHERE userId='$userid'");
+                                                    foreach ($schedules as $schedule) {
+                                                    ?>
+                                                    <tr>
+                                                        <td><?php echo $schedule['SubjectCode']; ?></td>
+                                                        <td><?php echo $schedule['WorkDay']; ?></td>
+                                                        <td><?php echo $schedule['StartTime']; ?></td>
+                                                        <td><?php echo $schedule['EndTime']; ?></td>
+                                                    </tr>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>                        
                                         </div>
                                     </div>
 
-
+                                     
 
                                 </div>
                             </div>
@@ -224,6 +265,66 @@
                                     </div>
                                 <?php } ?>
                             </div>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#scheduleModal">
+                            Add Schedule
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="myModalLabel">Add Schedule</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    
+                                    <!-- Your form fields go here -->
+                                    
+                                    <?php  $userid = isset($_GET['id']) ?>
+                                    <div class="form-group">
+                                        <label for="day">Day</label>
+                                        <select class="form-control" id="workDay" name="workDay">
+                                        <option value="Monday">Monday</option>
+                                        <option value="Tuesday">Tuesday</option>
+                                        <option value="Wednesday">Wednesday</option>
+                                        <option value="Thursday">Thursday</option>
+                                        <option value="Friday">Friday</option>
+                                        <option value="Saturday">Saturday</option>
+                                        <option <?= (isset($workDay) ? (($workDay == $row['workDay']) ? 'selected' : '') : ''); ?> ><?= $row['workDay']; ?></option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="subject">Subject Code</label>
+                                        <select name="SubjectCode" class="form-control" required>
+                                                <option></option>
+                                                <?php $result = my_query("SELECT * FROM tbl_subject");
+                                                for ($i = 1; $row = $result->fetch(); $i++) { ?>
+                                                    <option <?= (isset($SubjectCode) ? (($SubjectCode == $row['SubjectCode']) ? 'selected' : '') : ''); ?> ><?= $row['SubjectCode']; ?></option>
+                                                <?php } ?>
+                                            </select>
+                                    </div>
+                                    <div class="form-group">
+                                    <label for="startTime">Start Time:</label>
+                                    <input type="time" class="form-control" name="startTime" id="startTime" value="<?= (isset($startTime) ? $startTime : ''); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="endTime">End Time:</label>
+                                    <input type="time" class="form-control" name="endTime" id="endTime" value="<?= (isset($endTime) ? $endTime: ''); ?>">
+                                </div>                                 
+                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" name="func_param" value="<?= $title; ?>_Schedule" class="btn btn-success">Save Changes
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+
                         </div>
                     </form>
 
@@ -350,5 +451,21 @@
         })
 
     })
+
+</script>
+<script>
+  $('#saveBtn').click(function() {
+    $.ajax({
+      url: 'save-schedule.php',
+      method: 'POST',
+      data: $('#scheduleForm').serialize(),
+      success: function(response) {
+        // Code to handle successful response goes here
+      },
+      error: function(xhr, status, error) {
+        // Code to handle error goes here
+      }
+    });
+  });
 </script>
 <?php include_once('layout/footer.php'); ?>

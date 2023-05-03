@@ -48,7 +48,7 @@ namespace FaceRecognition
         public MySqlDataReader dr;
         public MySqlCommand cmd;
 
-        public static string constring = "Server=localhost;" + "Database=faceattendancedb;" + "Uid=root;" + "Password=;";
+        public static string constring = "Server=nc-webapp-db.mysql.database.azure.com;" + "Database=faceattendancedb;" + "Uid=nc_admin;" + "Password=P@ssword01;Sslmode=none";
         public static MySqlConnection con = new MySqlConnection(constring);
         void connect()
         {
@@ -239,6 +239,11 @@ namespace FaceRecognition
         }
 
         private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
         }

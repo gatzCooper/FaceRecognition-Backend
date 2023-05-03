@@ -96,6 +96,34 @@ switch ($function) {
         echo "<script type='text/javascript'>window.location.href='../constants.php?r=deleted';</script>";
         break;
 
+    //USer schedule
+
+    case "User_Schedule":
+   // Retrieve form data
+   $userID = $_POST['id'];
+   $workDay = $_POST['workDay'];
+   $subjectCode = $_POST['SubjectCode'];
+   $startTime = $_POST['startTime'];
+   $endTime = $_POST['endTime'];
+   $currentDate = new DateTime();
+
+
+    // Format the combined date and time value into a string
+    $formattedStartTime = date('H:i:s', strtotime($startTime));
+    $formattedEndDateTime = date('H:i:s', strtotime($endTime));
+
+    $db = db_connect();
+    $query ="INSERT INTO tbl_schedule(userId,workDay,startTime,endTime,subjectCode)VALUES($userID, '$workDay', '$formattedStartTime', '$formattedEndDateTime', '$subjectCode' )";
+    
+    try {
+        $sth = $db->prepare($query);
+        $sth->execute();
+
+    } catch (PDOException $e) {
+    }
+
+    echo "<script type='text/javascript'>alert('Schedule has been added.');window.location.href='../users.php?r=added';</script>";
+    break;
 
 }
 ?>
