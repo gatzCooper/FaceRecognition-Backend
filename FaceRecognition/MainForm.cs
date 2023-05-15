@@ -16,6 +16,8 @@ using System.IO.Ports;
 using FaceRecognition.DataLayer;
 using System.Timers;
 using Timer = System.Timers.Timer;
+using FaceRecognition.Services;
+using System.Xml.Linq;
 
 namespace FaceRecognition
 {
@@ -202,36 +204,54 @@ namespace FaceRecognition
 
         private void searchUser()
         {
+            IUserService _userService = new UserService();
+
             Timer3.Stop();
 
-            connect();
-            cmd = new MySqlCommand("SELECT * FROM tbl_users WHERE userNo=@fd1", con);
-            cmd.Parameters.AddWithValue("@fd1", txtUserNo.Text);
-            dr = cmd.ExecuteReader();
-            if ((dr.Read()))
+            //connect();
+            //cmd = new MySqlCommand("SELECT * FROM tbl_users WHERE userNo=@fd1", con);
+            //cmd.Parameters.AddWithValue("@fd1", txtUserNo.Text);
+            //dr = cmd.ExecuteReader();
+            //if ((dr.Read()))
+            //{
+
+            //    lblUserNo.Text = (dr["userNo"]).ToString();
+            //    lblname.Text = (dr["lname"] + "," + dr["fname"].ToString());
+            //    txtId.Text = dr["id"].ToString();
+
+            //    string[] s = dr["schedule"].ToString().Split('-');
+
+            //    dateTimePicker1.Value = DateTime.Parse(s[0]);
+            //    dateTimePicker4.Value = DateTime.Parse(s[1]);
+
+            //    SetAttendanceId();
+
+            //    SetActiveClockButton();
+
+            //    button1.Enabled = true;
+            //    //byte[] result = (byte[])dr["pic"];
+            //    //int ArraySize = result.GetUpperBound(0);
+            //    //MemoryStream ms = new MemoryStream(result, 0, ArraySize);
+            //    //pictureBox1.Image = Image.FromStream(ms); 
+            //    cmd.Dispose();
+            //    return;
+            //}
+
+            var user = _userService.GetUserDetailsByUserNumber(txtUserNo.Text);
+            if (user != null || user.username != null)
             {
-
-                lblUserNo.Text = (dr["userNo"]).ToString();
-                lblname.Text = (dr["lname"] + "," + dr["fname"].ToString());
-                txtId.Text = dr["id"].ToString();
-
-                string[] s = dr["schedule"].ToString().Split('-');
-
-                dateTimePicker1.Value = DateTime.Parse(s[0]);
-                dateTimePicker4.Value = DateTime.Parse(s[1]);
+                lblUserNo.Text = user.userNo;
+                lblname.Text = user.lName + ", " + user.fName;
+                txtId.Text = user.username;
 
                 SetAttendanceId();
 
                 SetActiveClockButton();
 
                 button1.Enabled = true;
-                //byte[] result = (byte[])dr["pic"];
-                //int ArraySize = result.GetUpperBound(0);
-                //MemoryStream ms = new MemoryStream(result, 0, ArraySize);
-                //pictureBox1.Image = Image.FromStream(ms); 
-                cmd.Dispose();
                 return;
             }
+
             else
             {
                 clr();

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.Panel3 = new System.Windows.Forms.Panel();
             this.LabelX1 = new DevComponents.DotNetBar.LabelX();
             this.txtname = new System.Windows.Forms.TextBox();
@@ -49,8 +50,9 @@
             this.Panel3.Controls.Add(this.LabelX1);
             this.Panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.Panel3.Location = new System.Drawing.Point(0, 0);
+            this.Panel3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Panel3.Name = "Panel3";
-            this.Panel3.Size = new System.Drawing.Size(758, 72);
+            this.Panel3.Size = new System.Drawing.Size(1137, 111);
             this.Panel3.TabIndex = 1119;
             // 
             // LabelX1
@@ -77,8 +79,9 @@
             this.LabelX1.Dock = System.Windows.Forms.DockStyle.Top;
             this.LabelX1.Font = new System.Drawing.Font("Cooper Black", 26.25F);
             this.LabelX1.Location = new System.Drawing.Point(0, 0);
+            this.LabelX1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.LabelX1.Name = "LabelX1";
-            this.LabelX1.Size = new System.Drawing.Size(758, 70);
+            this.LabelX1.Size = new System.Drawing.Size(1137, 108);
             this.LabelX1.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
             this.LabelX1.TabIndex = 1119;
             this.LabelX1.Text = "REGISTER FACE";
@@ -90,9 +93,10 @@
             this.txtname.Enabled = false;
             this.txtname.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtname.ForeColor = System.Drawing.Color.Blue;
-            this.txtname.Location = new System.Drawing.Point(206, 498);
+            this.txtname.Location = new System.Drawing.Point(309, 766);
+            this.txtname.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtname.Name = "txtname";
-            this.txtname.Size = new System.Drawing.Size(350, 30);
+            this.txtname.Size = new System.Drawing.Size(523, 41);
             this.txtname.TabIndex = 1117;
             this.txtname.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -100,9 +104,10 @@
             // 
             this.btnFaceAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnFaceAdd.Font = new System.Drawing.Font("Berlin Sans FB", 18F);
-            this.btnFaceAdd.Location = new System.Drawing.Point(206, 533);
+            this.btnFaceAdd.Location = new System.Drawing.Point(309, 820);
+            this.btnFaceAdd.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnFaceAdd.Name = "btnFaceAdd";
-            this.btnFaceAdd.Size = new System.Drawing.Size(350, 53);
+            this.btnFaceAdd.Size = new System.Drawing.Size(525, 82);
             this.btnFaceAdd.TabIndex = 3;
             this.btnFaceAdd.Text = "Save Face";
             this.btnFaceAdd.UseVisualStyleBackColor = true;
@@ -112,9 +117,10 @@
             // 
             this.imageBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.imageBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.imageBox1.Location = new System.Drawing.Point(390, 85);
+            this.imageBox1.Location = new System.Drawing.Point(585, 131);
+            this.imageBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.imageBox1.Name = "imageBox1";
-            this.imageBox1.Size = new System.Drawing.Size(350, 350);
+            this.imageBox1.Size = new System.Drawing.Size(524, 537);
             this.imageBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.imageBox1.TabIndex = 5;
             this.imageBox1.TabStop = false;
@@ -123,9 +129,10 @@
             // 
             this.imageBoxFrameGrabber.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.imageBoxFrameGrabber.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.imageBoxFrameGrabber.Location = new System.Drawing.Point(20, 85);
+            this.imageBoxFrameGrabber.Location = new System.Drawing.Point(30, 131);
+            this.imageBoxFrameGrabber.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.imageBoxFrameGrabber.Name = "imageBoxFrameGrabber";
-            this.imageBoxFrameGrabber.Size = new System.Drawing.Size(350, 350);
+            this.imageBoxFrameGrabber.Size = new System.Drawing.Size(524, 537);
             this.imageBoxFrameGrabber.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.imageBoxFrameGrabber.TabIndex = 4;
             this.imageBoxFrameGrabber.TabStop = false;
@@ -139,9 +146,10 @@
             this.groupPanel1.Controls.Add(this.imageBox1);
             this.groupPanel1.Controls.Add(this.btnFaceAdd);
             this.groupPanel1.Controls.Add(this.txtname);
-            this.groupPanel1.Location = new System.Drawing.Point(-3, 0);
+            this.groupPanel1.Location = new System.Drawing.Point(-4, 0);
+            this.groupPanel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupPanel1.Name = "groupPanel1";
-            this.groupPanel1.Size = new System.Drawing.Size(761, 601);
+            this.groupPanel1.Size = new System.Drawing.Size(1142, 925);
             // 
             // 
             // 
@@ -179,32 +187,36 @@
             // 
             this.maskedTextBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.maskedTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
-            this.maskedTextBox1.Location = new System.Drawing.Point(206, 465);
+            this.maskedTextBox1.Location = new System.Drawing.Point(309, 715);
+            this.maskedTextBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(350, 30);
+            this.maskedTextBox1.Size = new System.Drawing.Size(523, 41);
             this.maskedTextBox1.TabIndex = 1120;
             this.maskedTextBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.maskedTextBox1.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.maskedTextBox1_MaskInputRejected);
             this.maskedTextBox1.TextChanged += new System.EventHandler(this.maskedTextBox1_TextChanged);
             // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.pictureBox1.Location = new System.Drawing.Point(617, 440);
+            this.pictureBox1.Location = new System.Drawing.Point(926, 677);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(124, 102);
+            this.pictureBox1.Size = new System.Drawing.Size(186, 157);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 1122;
             this.pictureBox1.TabStop = false;
             // 
             // RegisterFace
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(758, 601);
+            this.ClientSize = new System.Drawing.Size(1137, 925);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.maskedTextBox1);
             this.Controls.Add(this.Panel3);
             this.Controls.Add(this.groupPanel1);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "RegisterFace";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "RegisterFace";

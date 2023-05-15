@@ -14,12 +14,20 @@ using System.Data;
 
 using System.Drawing.Imaging;
 using Microsoft.VisualBasic;
+using FaceRecognition.Model;
+using FaceRecognition.DataLayer;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using System.Data.SqlClient;
+using FaceRecognition.Services;
 
 namespace FaceRecognition
 {
     public partial class RegisterFace : Form
-    {  
-           //Declararation of all variables, vectors and haarcascades
+    {
+
+        IUserService _userService = new UserService();
+
+        //Declararation of all variables, vectors and haarcascades
         Image<Bgr, Byte> currentFrame;
         Capture grabber;
         HaarCascade face;
@@ -153,30 +161,18 @@ namespace FaceRecognition
         public MySqlCommand cmd;
         public string comportno;
 
-        public static string constring = "Server=nc-webapp-db.mysql.database.azure.com;" + "Database=faceattendancedb;" + "Uid=nc_admin;" + "Password=P@ssword01;Sslmode=none";
-        public static MySqlConnection con = new MySqlConnection(constring);
-        void connect()
+        private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
         {
-            if (con.State == ConnectionState.Open)
-            {
-                con.Close();
-                con.Open();
-            }
-            else if (con.State == ConnectionState.Closed)
-            {
-                con.Open();
-            }
-            else
-            {
-                con.Close();
-                con.Open();
-            }
+
         }
+
         #endregion
      
 
         private void RegisterFace_Load(object sender, EventArgs e)
         {
+            maskedTextBox1.Text = "Enter your username here...";
+            maskedTextBox1.ForeColor = Color.Gray;
 
             button1_Click(sender, e);
         }
@@ -223,49 +219,24 @@ namespace FaceRecognition
                 imageBox1.Image = TrainedFace;
 
 
-
-
-
-                connect();
-                cmd = new MySqlCommand("SELECT * FROM tbl_users WHERE userNo='" + maskedTextBox1.Text + "'", con);
-                dr = cmd.ExecuteReader();
-                if ((dr.Read()))
+                var user = _userService.GetUserDetailsByUserNumber(maskedTextBox1.Text);
+                if(user != null || user.username != null)
                 {
-                    //ImgExist = (dr["TrainedFaces"].ToString());
-                    //if (ImgExist != "0")
-                    //{
-                    //    MessageBox.Show("Your Face Is already registered.We proceed to update","System Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    //    ImgLoc = Application.StartupPath + "/TrainedFaces/face" + ImgExist + ".bmp";
-                    //    //System.IO.File.Delete(Application.StartupPath + "/TrainedFaces/face" + ImgExist + ".bmp");
-                    //    imageBox1.Image = TrainedFace; //Add Exist
+                    File.WriteAllText(Application.StartupPath + "/TrainedFaces/TrainedLabels.txt", trainingImages.ToArray().Length.ToString() + "%");
 
-                    //    SaveFileDialog sfd = new SaveFileDialog();
-                    //    sfd.FileName = ImgLoc;
-                    //    imageBox1.Image.Save(sfd.FileName);
-                    //    return;
-                    //}
-                    //else
-                    //{ 
-                        //Write the number of triained faces in a file text for further load
-                        File.WriteAllText(Application.StartupPath + "/TrainedFaces/TrainedLabels.txt", trainingImages.ToArray().Length.ToString() + "%");
+                    //Write the labels of triained faces in a file text for further load
+                    for (int i = 1; i < trainingImages.ToArray().Length + 1; i++)
+                    {
 
-                        //Write the labels of triained faces in a file text for further load
-                        for (int i = 1; i < trainingImages.ToArray().Length + 1; i++)
-                        {
+                        ImgLoc = Application.StartupPath + "/TrainedFaces/face" + i + ".bmp";
+                        trainingImages.ToArray()[i - 1].Save(ImgLoc);
+                        File.AppendAllText(Application.StartupPath + "/TrainedFaces/TrainedLabels.txt", labels.ToArray()[i - 1] + "%");
 
-                            ImgLoc = Application.StartupPath + "/TrainedFaces/face" + i + ".bmp";
-                            trainingImages.ToArray()[i - 1].Save(ImgLoc);
-                            File.AppendAllText(Application.StartupPath + "/TrainedFaces/TrainedLabels.txt", labels.ToArray()[i - 1] + "%");
+                        pictureBox1.ImageLocation = ImgLoc;
+                        fileNameimg = i;
 
-                            pictureBox1.ImageLocation = ImgLoc;
-                            fileNameimg =  i;
-
-                        }
-                    
-                    //}
-               
+                    }
                 }
-                cmd.Dispose();
 
 
                 MessageBox.Show(maskedTextBox1.Text + "´s face detected and added :)", "Training OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -277,10 +248,12 @@ namespace FaceRecognition
                 ms.Read(pic_arr, 0, pic_arr.Length);
 
 
-                connect();
-                cmd = new MySqlCommand("UPDATE tbl_users SET trackFace='" + pic_arr + "', TrainedFaces='" + fileNameimg + "' WHERE userNo='" + maskedTextBox1.Text + "'", con);
-                cmd.ExecuteNonQuery();
-                cmd.Dispose();
+                //connect();
+                //cmd = new MySqlCommand("UPDATE tbl_users SET trackFace='" + pic_arr + "', TrainedFaces='" + fileNameimg + "' WHERE userNo='" + maskedTextBox1.Text + "'", con);
+                //cmd.ExecuteNonQuery();
+                //cmd.Dispose();
+
+                _userService.UpsertUserFaceRecords(maskedTextBox1.Text, pic_arr.ToString(), fileNameimg.ToString());
 
             }
             catch
@@ -297,31 +270,31 @@ namespace FaceRecognition
         
         }
 
+        private void maskTextBox1_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtname.Text))
+            {
+                maskedTextBox1.Text = "Enter your username here...";
+                maskedTextBox1.ForeColor = Color.Gray;
+            }
+        }
     
-
         private void maskedTextBox1_TextChanged(object sender, EventArgs e)
         {
-            connect();
-            cmd = new MySqlCommand("Select * from tbl_users WHERE userNo=@fd1", con);
-            cmd.Parameters.AddWithValue("@fd1", maskedTextBox1.Text);
-            dr = cmd.ExecuteReader();
-            if ((dr.Read()))
+            
+            maskedTextBox1.ForeColor = Color.Black;
+
+            var user = _userService.GetUserDetailsByUserNumber(maskedTextBox1.Text);
+            if (user != null || user.username != null)
             {
-                txtname.Text = (dr["lname"] + "," + dr["fname"].ToString());
-                //byte[] result = (byte[])dr["ipath"];
-                //int ArraySize = result.GetUpperBound(0);
-                //MemoryStream ms = new MemoryStream(result, ^0, ArraySize);
-                //imageBoxFrameGrabber.Image =  new MemoryStream(result, 0, ArraySize);
-                cmd.Dispose();
-                return;
+                txtname.Text = String.Concat(user.lName + ", " + user.fName);
             }
+
             else
             {
                 txtname.Text = "NO INFORMATION";
             }
         }
-
-     
 
     }
 }
