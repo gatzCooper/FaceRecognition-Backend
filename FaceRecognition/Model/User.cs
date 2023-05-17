@@ -8,6 +8,7 @@ namespace FaceRecognition.Model
 {
     public class User
     {
+        public int userId { get; set; }
         public string userNo { get; set; }
         public string employmentCode { get; set; }
         public string empDescription { get; set; }

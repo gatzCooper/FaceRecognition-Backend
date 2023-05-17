@@ -1,22 +1,39 @@
-﻿using System;
+﻿using FaceRecognition.Model;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace FaceRecognition.DataLayer
 {
     class DL_TimeRegistration : Database
     {
+        private const string USP_UPSERT_USER_ATTENDANCE = "usp_UpsertUserAttendance";
+        private const string USP_GET_ATTENDANCEID_BY_CURRENTDATE_AND_USERID = "usp_GetAttendanceIdByUserId";
+        private const string USP_GET_ATTENDANCE_BY_USERID = "usp_GetAttendanceByUserId";
+        private const string USP_GET_CURRENT_ATTENDANCE_BY_ID = "usp_GetAttendanceByAttendanceId";
+        private const string USP_UPDATE_CURRENT_ATTENDANCE_BY_ID = "usp_UpdateUserCurrentAttendance";
+        private const string USP_GET_ALL_ATTENDANCE = "usp_GetAllAttendance";
+        private const string USP_GET_TOTAL_ACTUAL_WORKING_HOURS = "usp_GetTotalWorkingHours";
+
+        
         public bool ClockIn(TimeSpan time)
         {
-            var sql = String.Format(
-                "INSERT INTO tbl_attendances (user_id, date, clock_in)" +
-                "VALUES ('{0}', CURRENT_DATE(), '{1}')",
-                Properties.Settings.Default.userId, time
-                );
+            IDataAccessService _dataAccessService = new DataAccessService();
 
-            return ExecuteNonQuery(sql);
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@userId", Properties.Settings.Default.userId),
+                new SqlParameter("@time", time)
+            };
+
+           var res  = _dataAccessService.ExecuteNonQuery(USP_UPSERT_USER_ATTENDANCE, parameters);
+           return Convert.ToBoolean(res);  
+            
         }
 
         public bool LunchStart(int id, TimeSpan time)
@@ -48,14 +65,19 @@ namespace FaceRecognition.DataLayer
 
         public bool ClockOut(int id, TimeSpan time)
         {
+            
 
-            var sql = $"UPDATE tbl_attendances set clock_out='{time}' " +
-                $"where id = {id}";
+            IDataAccessService _dataAccessService = new DataAccessService();
+            string currentDay = DateTime.Now.DayOfWeek.ToString();
+             SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@attendanceId", Properties.Settings.Default.attendanceId),
+                new SqlParameter("@time", time),
+                new SqlParameter("@workDay", currentDay)
+            };
 
-            if (!ExecuteNonQuery(sql))
-                return false;
-
-            return ComputeTotalHours(Properties.Settings.Default.attendanceId);
+            var res = _dataAccessService.ExecuteNonQuery(USP_UPDATE_CURRENT_ATTENDANCE_BY_ID, parameters);
+            return Convert.ToBoolean(res);
         }
 
         public bool ComputeMorningTime(int id)
@@ -84,70 +106,65 @@ namespace FaceRecognition.DataLayer
 
         public int GetAttendanceId(int userId)
         {
-            var sql = String.Format(
-                "SELECT * " +
-                "FROM tbl_attendances " +
-                "WHERE date=CURRENT_DATE() " +
-                "AND user_id='{0}' " +
-                "ORDER BY id DESC " +
-                "LIMIT 1",
-                 Properties.Settings.Default.userId
-                );
-
-            var result = ExecuteDataTable(sql);
-
-            return (result != null && result.Rows.Count > 0) ? (int)result.Rows[0]["id"] : 0;
+            IDataAccessService dataAccessService = new DataAccessService();
+   
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@userId", userId)
+            };
+            int attendanceID = 0;
+            using(SqlDataReader sqlDataReader = (SqlDataReader)dataAccessService.ExecuteReader(USP_GET_ATTENDANCEID_BY_CURRENTDATE_AND_USERID, parameters))
+            {
+                while (sqlDataReader.Read())
+                {
+                    attendanceID = Convert.ToInt32(sqlDataReader["attendanceId"]);
+                }
+                return attendanceID;
+            }
         }
 
-        public DataTable GetAttendanceById(int id)
+        public DataTable GetCurrentDayAttendanceById(int id)
         {
-            DateTime dateTime = DateTime.UtcNow.Date;
-            DateTime today = DateTime.Today;
+            IDataAccessService dataAccessService = new DataAccessService();
 
-            var sql = "SELECT * " +
-                "FROM tbl_attendances " +
-                "WHERE id = '" + id + "' AND date = '" + today.ToString("yyyy-MM-dd") + "'  "; //DateTime.Now.TimeOfDay  // 
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@attendanceId", id)
+            };
 
-            return ExecuteDataTable(sql);
+            return dataAccessService.ExecuteDataTable(USP_GET_CURRENT_ATTENDANCE_BY_ID, parameters);
         }
 
         public bool IsTotalHoursLessThanOneHour(int id)
         {
-            var sql = $"select HOUR(TIMEDIFF(NOW(), MAX(CAST(clock_in as DATETIME)))) AS total_hours " +
-                $"from tbl_attendances where id = {id}";
+            IDataAccessService dataAccessService = new DataAccessService();
 
-            var result = ExecuteDataTable(sql);
-            return (int)result.Rows[0]["total_hours"] < 1;
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@attendanceId", id)
+            };
+
+            var result = dataAccessService.ExecuteDataTable(USP_GET_TOTAL_ACTUAL_WORKING_HOURS, parameters);
+            return (int)result.Rows[0]["totalWorkingHours"] < 1;
         }
 
-        public DataTable GetTimeSheetByUserId()
+        public DataTable GetTimeSheetByUserId(int userId)
         {
-            var sql = "SELECT " +
-                "DATE_FORMAT(date, '%M %d, %Y') AS 'DATE', " +
-                " CONCAT(fname, ' ',lname) AS 'FULLNAME', " +
-                "TIME_FORMAT(clock_in, '%h:%i:%s %p') AS 'TIME IN - AM', " +
-                "TIME_FORMAT(lunch_start, '%h:%i:%s %p') AS 'TIME OUT - AM', " +
-                "TIME_FORMAT(lunch_end, '%h:%i:%s %p') AS 'TIME IN - PM'," +
-                "TIME_FORMAT(clock_out, '%h:%i:%s %p') AS 'TIME OUT - PM', " +
-                "total_hours AS 'TOTAL HOURS'" +
-                "FROM tbl_attendances a INNER JOIN tbl_users u ON u.id=a.user_id  WHERE user_id = '" + Properties.Settings.Default.userId + "'"; //  WHERE user_id = '" + userId + "'
-
-            return ExecuteDataTable(sql);
+            userId = Properties.Settings.Default.userId;
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+                new SqlParameter("@attendanceId", userId)
+            };
+            IDataAccessService dataAccessService = new DataAccessService();
+            
+            return dataAccessService.ExecuteDataTable(USP_GET_ATTENDANCE_BY_USERID, parameters);
         }
 
         public DataTable GetTimeSheet()
         {
-            var sql = "SELECT " +
-                "DATE_FORMAT(date, '%M %d, %Y') AS 'DATE', " +
-                " CONCAT(fname, ' ',lname) AS 'FULLNAME', " +
-                "TIME_FORMAT(clock_in, '%h:%i:%s %p') AS 'TIME IN - AM', " +
-                "TIME_FORMAT(lunch_start, '%h:%i:%s %p') AS 'TIME OUT - AM', " +
-                "TIME_FORMAT(lunch_end, '%h:%i:%s %p') AS 'TIME IN - PM'," +
-                "TIME_FORMAT(clock_out, '%h:%i:%s %p') AS 'TIME OUT - PM', " +
-                "total_hours AS 'TOTAL HOURS'" +
-                "FROM tbl_attendances a INNER JOIN tbl_users u ON u.id=a.user_id  "; //  WHERE user_id = '" + userId + "'
+            IDataAccessService dataAccessService = new DataAccessService();
 
-            return ExecuteDataTable(sql);
+            return dataAccessService.ExecuteDataTable(USP_GET_ALL_ATTENDANCE);
         }
 
 

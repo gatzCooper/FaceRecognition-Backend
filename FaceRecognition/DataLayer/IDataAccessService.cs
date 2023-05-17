@@ -13,7 +13,7 @@ namespace FaceRecognition.DataLayer
        int ExecuteNonQuery(string query, IEnumerable<SqlParameter> parameters = null);
        IDataReader ExecuteReader(string query, IEnumerable<SqlParameter> parameters = null);
        object ExecuteScalar(string query, IEnumerable<SqlParameter> parameters = null);
-
+        DataTable ExecuteDataTable(string query, IEnumerable<SqlParameter> parameters = null);
        void Dispose();
     }
 }

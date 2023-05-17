@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DevComponents.DotNetBar;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -107,6 +108,41 @@ namespace FaceRecognition.DataLayer
         public void Dispose()
         {
             _sqlConnection.Dispose();
+        }
+
+        public DataTable ExecuteDataTable(string query, IEnumerable<SqlParameter> parameters = null)
+        {
+            DataTable dataTable = new DataTable();
+
+            using (var command = new SqlCommand(query, _sqlConnection))
+            {
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+                if (parameters != null && parameters.Any())
+                {
+                    foreach (var param in parameters)
+                    {
+                        command.Parameters.Add(param);
+
+                    }
+                }
+
+                try
+                {
+                    _sqlConnection.Open();
+                   using(SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+                        adapter.Fill(dataTable);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+
+            return dataTable;
+
         }
     }
 }

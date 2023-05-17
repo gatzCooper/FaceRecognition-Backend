@@ -155,19 +155,14 @@ namespace FaceRecognition
 
         public string SQL, msg, lblIDnumber1, ImgExist, ImgLoc;
         public int fileNameimg;
-        #region Connection And Setting up connection
-        public MySqlDataAdapter da;
-        public MySqlDataReader dr;
-        public MySqlCommand cmd;
+
         public string comportno;
 
         private void maskedTextBox1_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
         {
 
         }
-
-        #endregion
-     
+    
 
         private void RegisterFace_Load(object sender, EventArgs e)
         {

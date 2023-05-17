@@ -31,6 +31,7 @@ namespace FaceRecognition
                 {
                     while (sqlDataReader.Read())
                     {
+                        user.userId = Convert.ToInt32(sqlDataReader["userId"]);
                         user.userNo = Convert.ToString(sqlDataReader["userNumber"]) ?? "";
                         user.employmentCode = Convert.ToString(sqlDataReader["employmentCode"]) ?? "";
                         user.empDescription = Convert.ToString(sqlDataReader["empDescription"]) ?? "";
