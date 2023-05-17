@@ -188,10 +188,11 @@ namespace FaceRecognition
 
                 SetAttendanceId();
 
-                SetActiveClockButton();
+                SetActiveClockButton();   
+                button1.Enabled = true;
 
-                button1.PerformClick();
                 return;
+         
             }
 
             else
@@ -240,20 +241,23 @@ namespace FaceRecognition
                 var currenttime = DateTime.Now.TimeOfDay;
                 var attendanceId = Properties.Settings.Default.attendanceId;
 
-
-                if (action == "CLOCK IN")
+ 
+                if (action == "TIME IN")
                 {
                     var isRecorded = data.ClockIn(currenttime);
 
                     if (isRecorded)
                     {
-                        AutoClosingMessageBox.Show("CLOCK IN has been successfully recorded", "Successful", 4000);
+                        AutoClosingMessageBox.Show("TIME IN has been successfully recorded", "Successful", 4000);
+                        button1.Text = "TIME OUT";
+                        lblStatus.Text = button1.Text;
+
                     }
                     else
-                        AutoClosingMessageBox.Show("Invalid  Clock In Action", "Error", 2000);
+                        AutoClosingMessageBox.Show("Invalid  Time In Action", "Error", 2000);
                 }
              
-                else if (action == "CLOCK OUT")
+                else if (action == "TIME OUT")
 
                 {
                     if (data.IsTotalHoursLessThanOneHour(attendanceId))
@@ -282,11 +286,14 @@ namespace FaceRecognition
 
                         AutoClosingMessageBox.Show("CLOCK OUT has been successfully recorded", "Successful", 4000);
 
-                        Properties.Settings.Default.attendanceId = 0;
+                        //Properties.Settings.Default.attendanceId = 0;
                         Properties.Settings.Default.Save();
                         Properties.Settings.Default.Reload();
                         button1.Enabled = false;
-                        button1.Text = "CLOCK IN";
+                        button1.Text = "TIME IN";
+                        
+                        this.Close();
+                        
                     }
                     else
                         AutoClosingMessageBox.Show("Invalid Clock Out Action", "Error", 2000);
@@ -311,13 +318,15 @@ namespace FaceRecognition
             {
                 if (result.Rows[0]["timeIn"] == DBNull.Value)
                 {
-                    button1.Text = "CLOCK IN";
+                    button1.Text = "TIME IN";
+                    lblStatus.Text = "TIME IN";
                     return;
                 }
 
                 if (result.Rows[0]["timeOut"] == DBNull.Value || result.Rows[0]["timeOut"].ToString() == "00:00:00.0000000")
                 {
-                    button1.Text = "CLOCK OUT";
+                    button1.Text = "TIME OUT";
+                    lblStatus.Text = "TIME IN";
                     return;
                 }
 

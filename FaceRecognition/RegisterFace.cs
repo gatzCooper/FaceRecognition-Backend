@@ -165,7 +165,7 @@ namespace FaceRecognition
 
         private void RegisterFace_Load(object sender, EventArgs e)
         {
-            maskedTextBox1.Text = "Enter your username here...";
+            maskedTextBox1.Text = "Enter your user number here...";
             maskedTextBox1.ForeColor = Color.Gray;
 
             button1_Click(sender, e);
