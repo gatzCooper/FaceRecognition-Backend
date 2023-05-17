@@ -7,7 +7,6 @@ using Emgu.CV.Structure;
 using Emgu.CV.CvEnum;
 using System.IO;
 using System.Diagnostics;
-using MySql.Data.MySqlClient;
 using System.Data;
 
 using System.IO.Ports;
@@ -191,7 +190,7 @@ namespace FaceRecognition
 
                 SetActiveClockButton();
 
-                button1.Enabled = true;
+                button1.PerformClick();
                 return;
             }
 

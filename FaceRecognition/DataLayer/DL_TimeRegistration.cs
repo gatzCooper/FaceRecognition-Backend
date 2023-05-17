@@ -10,7 +10,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace FaceRecognition.DataLayer
 {
-    class DL_TimeRegistration : Database
+    class DL_TimeRegistration
     {
         private const string USP_UPSERT_USER_ATTENDANCE = "usp_UpsertUserAttendance";
         private const string USP_GET_ATTENDANCEID_BY_CURRENTDATE_AND_USERID = "usp_GetAttendanceIdByUserId";
@@ -36,37 +36,9 @@ namespace FaceRecognition.DataLayer
             
         }
 
-        public bool LunchStart(int id, TimeSpan time)
-        {
-            var sql = String.Format(
-                "UPDATE tbl_attendances " +
-                "SET lunch_start='{0}'" +
-                "WHERE id={1}",
-                time, id
-                );
-
-            if (!ExecuteNonQuery(sql))
-                return false;
-
-            return ComputeMorningTime(Properties.Settings.Default.attendanceId);
-        }
-
-        public bool LunchEnd(int id, TimeSpan time)
-        {
-            var sql = String.Format(
-                "UPDATE tbl_attendances " +
-                "SET lunch_end='{0}'" +
-                "WHERE id={1}",
-                time, id
-                );
-
-            return ExecuteNonQuery(sql);
-        }
-
         public bool ClockOut(int id, TimeSpan time)
         {
             
-
             IDataAccessService _dataAccessService = new DataAccessService();
             string currentDay = DateTime.Now.DayOfWeek.ToString();
              SqlParameter[] parameters = new SqlParameter[]
@@ -79,31 +51,6 @@ namespace FaceRecognition.DataLayer
             var res = _dataAccessService.ExecuteNonQuery(USP_UPDATE_CURRENT_ATTENDANCE_BY_ID, parameters);
             return Convert.ToBoolean(res);
         }
-
-        public bool ComputeMorningTime(int id)
-        {
-            var sql = String.Format(
-                "UPDATE tbl_attendances " +
-                "SET total_hours=(" +
-                "SELECT TIMEDIFF(lunch_start, clock_in) " +
-                "WHERE id={0}" +
-                ")" +
-                "WHERE id={0}", id);
-
-            return ExecuteNonQuery(sql);
-        }
-
-        public bool ComputeTotalHours(int id)
-        {
-           
-            var sql = $"UPDATE tbl_attendances SET total_hours = " +
-                $"(SELECT TIME_FORMAT(TIMEDIFF(clock_out, MAX(clock_in)), '%H:%i:%s') " +
-                $"FROM tbl_attendances where id ={id})" +
-                $"where id ={id}";
-
-            return ExecuteNonQuery(sql);
-        }
-
         public int GetAttendanceId(int userId)
         {
             IDataAccessService dataAccessService = new DataAccessService();
