@@ -16,6 +16,8 @@ using System.IO.Ports;
 using FaceRecognition.DataLayer;
 using System.Timers;
 using Timer = System.Timers.Timer;
+using FaceRecognition.Services;
+using System.Xml.Linq;
 
 namespace FaceRecognition
 {
@@ -39,35 +41,6 @@ namespace FaceRecognition
         List<string> NamePersons = new List<string>();
         int ContTrain, NumLabels, t;
         string name, names = null;
-
-
-
-
-        #region Connection And Setting up connection
-        public MySqlDataAdapter da;
-        public MySqlDataReader dr;
-        public MySqlCommand cmd;
-
-        public static string constring = "Server=nc-webapp-db.mysql.database.azure.com;" + "Database=faceattendancedb;" + "Uid=nc_admin;" + "Password=P@ssword01;Sslmode=none";
-        public static MySqlConnection con = new MySqlConnection(constring);
-        void connect()
-        {
-            if (con.State == ConnectionState.Open)
-            {
-                con.Close();
-                con.Open();
-            }
-            else if (con.State == ConnectionState.Closed)
-            {
-                con.Open();
-            }
-            else
-            {
-                con.Close();
-                con.Open();
-            }
-        }
-        #endregion
 
         public FaceDetect()
         {
@@ -202,36 +175,26 @@ namespace FaceRecognition
 
         private void searchUser()
         {
+            IUserService _userService = new UserService();
+
             Timer3.Stop();
 
-            connect();
-            cmd = new MySqlCommand("SELECT * FROM tbl_users WHERE userNo=@fd1", con);
-            cmd.Parameters.AddWithValue("@fd1", txtUserNo.Text);
-            dr = cmd.ExecuteReader();
-            if ((dr.Read()))
+            
+            var user = _userService.GetUserDetailsByUserNumber(txtUserNo.Text);
+            if (user != null || user.username != null)
             {
-
-                lblUserNo.Text = (dr["userNo"]).ToString();
-                lblname.Text = (dr["lname"] + "," + dr["fname"].ToString());
-                txtId.Text = dr["id"].ToString();
-
-                string[] s = dr["schedule"].ToString().Split('-');
-
-                dateTimePicker1.Value = DateTime.Parse(s[0]);
-                dateTimePicker4.Value = DateTime.Parse(s[1]);
+                lblUserNo.Text = user.userNo;
+                lblname.Text = user.lName + ", " + user.fName;
+                txtId.Text = Convert.ToString(user.userId);
 
                 SetAttendanceId();
 
                 SetActiveClockButton();
 
                 button1.Enabled = true;
-                //byte[] result = (byte[])dr["pic"];
-                //int ArraySize = result.GetUpperBound(0);
-                //MemoryStream ms = new MemoryStream(result, 0, ArraySize);
-                //pictureBox1.Image = Image.FromStream(ms); 
-                cmd.Dispose();
                 return;
             }
+
             else
             {
                 clr();
@@ -290,28 +253,7 @@ namespace FaceRecognition
                     else
                         AutoClosingMessageBox.Show("Invalid  Clock In Action", "Error", 2000);
                 }
-                else if (action == "LUNCH START")
-                {
-                    var isRecorded = data.LunchStart(attendanceId, currenttime);
-
-                    if (isRecorded)
-                    {
-                        AutoClosingMessageBox.Show("CLOCK OUT has been successfully recorded", "Successful", 4000);
-                    }
-                    else
-                        AutoClosingMessageBox.Show("Invalid CLOCK OUT Action", "Error", 2000);
-                }
-                else if (action == "LUNCH END")
-                {
-                    var isRecorded = data.LunchEnd(attendanceId, currenttime);
-
-                    if (isRecorded)
-                    {
-                        AutoClosingMessageBox.Show("CLOCK IN has been successfully recorded", "Successful", 4000);
-                    }
-                    else
-                        AutoClosingMessageBox.Show("Invalid CLOCK IN Action", "Error", 2000);
-                }
+             
                 else if (action == "CLOCK OUT")
 
                 {
@@ -362,31 +304,19 @@ namespace FaceRecognition
 
         public void SetActiveClockButton()
         {
-            var result = data.GetAttendanceById(Properties.Settings.Default.attendanceId);
+            var result = data.GetCurrentDayAttendanceById(Properties.Settings.Default.attendanceId);
             
 
 
             if (result != null && result.Rows.Count > 0)
             {
-                if (result.Rows[0]["clock_in"] == DBNull.Value)
+                if (result.Rows[0]["timeIn"] == DBNull.Value)
                 {
                     button1.Text = "CLOCK IN";
                     return;
                 }
 
-                if (result.Rows[0]["lunch_start"] == DBNull.Value)
-                {
-                    button1.Text = "CLOCK OUT";
-                    return;
-                }
-
-                if (result.Rows[0]["lunch_end"] == DBNull.Value)
-                {
-                    button1.Text = "CLOCK IN";
-                    return;
-                }
-
-                if (result.Rows[0]["clock_out"] == DBNull.Value)
+                if (result.Rows[0]["timeOut"] == DBNull.Value || result.Rows[0]["timeOut"].ToString() == "00:00:00.0000000")
                 {
                     button1.Text = "CLOCK OUT";
                     return;
