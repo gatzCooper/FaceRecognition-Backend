@@ -153,6 +153,12 @@ namespace FaceRecognition
                 }
 
         public string SQL, msg, lblIDnumber1, ImgExist, ImgLoc;
+
+        private void imageBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
         public int fileNameimg;
 
         public string comportno;
@@ -174,11 +180,12 @@ namespace FaceRecognition
 
         private void btnFaceAdd_Click(object sender, EventArgs e)
         {
-            if (( txtname.Text == "NO INFORMATION"))
+            if ( txtname.Text == "" || txtname.Text =="," || txtname.Text == "NO INFORMATION")
             {
-                MessageBox.Show("Complete the details !", "Missing value error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("User not found in the database!", "Invalid User", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
+
 
             try
             {
@@ -249,6 +256,7 @@ namespace FaceRecognition
 
                 _userService.UpsertUserFaceRecords(maskedTextBox1.Text, pic_arr.ToString(), fileNameimg.ToString());
 
+                this.Close();
             }
             catch
             {
@@ -279,7 +287,9 @@ namespace FaceRecognition
             maskedTextBox1.ForeColor = Color.Black;
 
             var user = _userService.GetUserDetailsByUserNumber(maskedTextBox1.Text);
-            if (user != null || user.username != null)
+            if ((user != null || user.username != null) && !String.IsNullOrEmpty(user.fName)
+                || !String.IsNullOrEmpty(user.lName))
+
             {
                 txtname.Text = String.Concat(user.lName + ", " + user.fName);
             }

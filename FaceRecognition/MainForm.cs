@@ -210,6 +210,11 @@ namespace FaceRecognition
 
         }
 
+        private void Panel3_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
         void clr()
         {
             dateTimePicker7.Value = DateTime.Now;
@@ -287,6 +292,8 @@ namespace FaceRecognition
                         Properties.Settings.Default.Reload();
                         button1.Enabled = false;
                         button1.Text = "CLOCK IN";
+
+                        this.Close();
                     }
                     else
                         AutoClosingMessageBox.Show("Invalid Clock Out Action", "Error", 2000);
